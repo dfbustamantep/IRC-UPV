@@ -1,7 +1,8 @@
 <h1 align="center"> Repositorio asignatura Introduccion a las Redes de Computadoras  </h1>
 <h2> Docentes </h2>
--Teoría: Ibai Gurrutxaga
--Laboratorio: Ana I. González
+Teoría: Ibai Gurrutxaga
+
+Laboratorio: Ana I. González
 
 ## Objetivo
 
