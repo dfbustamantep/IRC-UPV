@@ -1,4 +1,4 @@
-<h1 align="center"> Repositorio asignatura Introduccion a las Redes de Computadoras  </h1>
+<h1 align="center"> Repositorio asignatura Introducción a las Redes de Computadoras  </h1>
 <h2> Docentes </h2>
 Teoría: Ibai Gurrutxaga
 
