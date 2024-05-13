@@ -11,7 +11,7 @@ El objetivo de la asignatura es conocer los conceptos y tecnocas fundamentales r
 
 ## Temas 
 
-# Teoría
+### Teoría
 <ol>
   <li>Introducción</li>
   <li>La conexion a la red</li>
@@ -20,7 +20,7 @@ El objetivo de la asignatura es conocer los conceptos y tecnocas fundamentales r
   <li>Seguridad en la red</li>
 </ol>
 
-# Práctica
+### Práctica
 <ol>
   <li>Introducción</li>
   <li>Switching</li>
