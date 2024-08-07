@@ -1,0 +1,77 @@
+tar xvf Descargas/lab6-VLAN-forwarding.tar.gz -C GNS3/projects/
+
+LAB 6
+
+RS1
+	vl #sh vlan-switch brief
+
+#VLAN10 puertos Fa1/0 y Fa1/7
+#VLAN20 puertos Fa1/3 y Fa1/10
+
+PC130
+	ifconfig
+	route
+
+PC3
+
+	ifconfig eth0
+	route
+	
+PC2
+	ifconfig eth0 192.168.0.2/26 up
+	ifconfig eth0
+	
+RS1
+	sh ip int br
+	#nos damos cuenta que las interfaces no estan asignadas
+	
+
+PC2
+	route add default gw 192.168.0.1
+	
+
+PC67
+	ifconfig eth0 192.168.0.67/26 up
+	route add default gw 192.168.0.65
+	
+	
+R1
+	sh ip route //tabla de reenvio
+	
+RS1
+	sh ip route
+	sh ip int br
+	
+	conf t
+	ip routing 
+	end
+	sh ip route
+	
+	
+Default admite supperneting,se puede hacer siempre
+
+RS1
+	conf t
+	ip route 0.0.0.0 0.0.0.0 203.0.113.1
+	end
+	
+	sh ip route
+	
+	conf t
+	#INTERFAZ  SU DIRECCION
+	int vlan 10
+	ip add 192.168.0.65 255.255.255.192
+	end
+	
+	sh ip int br
+	
+	conf t
+	int vlan20
+	ip add 192.168.0.1 255.255.255.192   
+	end
+
+PC2
+	ping -c 2 192.168.0.3
+	ping -c 2 192.168.0.66
+	ping -c 2 203.0.113.1
+

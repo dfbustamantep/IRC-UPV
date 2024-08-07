@@ -34,3 +34,10 @@ El objetivo de la asignatura es conocer los conceptos y tecnocas fundamentales r
   <li>ACLs</li>
   <li>Cortafuegos</li>
 </ol>
+
+
+### Herramientas
+<ol>
+  <li>EDONON Escritorio Vritual UPV/EHU</li>
+  <li>GNS3</li>
+</ol>

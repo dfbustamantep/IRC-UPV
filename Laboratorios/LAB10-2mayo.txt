@@ -1,0 +1,143 @@
+tar xvf Descargas/lab10-ACL.tar.gz -C GNS3/projects/
+
+CONFIGURACION BASICA DE CORTAFUEOS FILTRANDO POR DIRECCION IP DE ORIGEN
+
+ACLS-Lista de control de acceso
+
+Estandar se coloca lo mas cerca al destino 1-100
+Extendida lo mas cerca del origen 100-...
+
+R2
+conf t
+access-list 1 remark SOLO TRAFICO DE RED 1
+access-list 1 permit 192.0.2.0 0.0.0.255 log
+int f0/1
+ip access-group 1 out
+end
+
+sh ip interface
+sh access-lists
+sh run | include access-list
+
+
+PING PC1-PC2
+ping -c 3 203.0.113.20
+
+PING R1 a PC 2
+ping 203.0.113.20
+
+R2 
+sh access-list
+
+
+
+R1
+conf t
+ip access-list standard FILTRO-HOST
+remark ACCESO-EXCLUSIVO
+permit host 203.0.113.20 log 
+int f0/1
+ip access-group FILTRO-HOST out
+end
+sh access-list
+sh ip int f0/1
+
+PC2
+ping -c 3 192.0.2.10
+
+R1
+sh access-list
+
+R2
+ping 129.0.2.10
+
+R1
+conf t
+ip access-list standard FILTRO-HOST
+5 permit host 198.51.100.2 log
+end
+sh access-lists
+
+R2
+ping 129.0.2.10
+
+
+FILTROS MAS ESPECIFFICOS EXTENDEND
+
+PC1
+telnet 203.0.113.20
+
+Red 192.0.2/24 define la siguiente politica de seguridad
+	PErmite trafico generado en esta red que vaya a cualquier servidor http externo
+	se permite realizar telnet desde pc1 a R2-f0/0
+	el resto de trafico no sale de la red a internet
+	
+	ACL extended
+	
+
+R1
+conf t
+access-list 100 remark NUEVAS REGLAS PARA RED 1
+access-list 100 permit tcp 192.0.2.0 0.0.0.255 any eq 80 log
+access-list 100 permit tcp host 192.0.2.10 host 198.51.100.2 eq 23 log//telnet trabaja sobre tcp
+///en funcion de lo que quiero restringir
+int f0/0 
+ip access-group 100 out
+end
+
+pc1
+telnet 198.51.100.2
+	en router
+ping 203.0.113.20 
+telnet 198.51.100.2 80
+GET / HTTP/1.1
+
+REPETIMOS EL TELNET DEL EJERCICIO 6 A PC2
+telnet 203.0.113.20
+
+
+
+red 203.0.113/24
+Solo se permite trafico web que va desde esta red a R1 - f0/0
+ACLs extended
+lo mas cerca de origen
+
+r1
+conf t
+access-list 101 remark TRAFICO WEB R2
+access-list 101 permit tcp 203.0.113.20 0.0.0.255 any eq 80 log
+int f0/0 
+ip access-group 101 in
+exit
+
+pc2
+telnet 198.51.100.1 80
+GET / HTTP/1.1
+
+PING A R1-F0/0
+ping  198.51.100.1 -c 3
+
+Ping R2 F0/0
+ping  198.51.100.2 -c 3
+
+Falta punto 8.c
+
+r1
+conf t
+int f0/0
+no ip access-group 101 in
+end
+
+int f0/1
+ip access-group 101 out
+exit
+end
+
+pc2
+
+PING A R1-F0/0
+ping  198.51.100.1 -c 3
+
+Ping R2 F0/0
+ping  198.51.100.2 -c 3
+

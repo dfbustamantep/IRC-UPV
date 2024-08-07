@@ -1,0 +1,138 @@
+tar xvf Descargas/lab8-ipv6.tar.gz -C GNS3/projects/
+LAB8
+IPV6
+
+wireshark en el enlace de serv11
+
+start serv11
+
+serv11 consola
+
+ifconfig eth0
+
+route -6 //da mas informacion
+ip -6 r //mejor usar esta
+
+ping del servidor11 al 12
+serv 12
+ifconfig eth0
+
+ping6 fe80:0:20:cc:ff:fe12:12:12 //no va a funcionar
+ping6 fe80:0:20:cc:ff:fe12:12:12%eth0
+
+#PING a direccion multicas
+ping6 -c 3 ff02::1%eth0
+
+#Tabla de traducciones
+ip -6 neigh show
+ip -6 n //abreviatura para neighbor
+
+
+//CONFIGURAR LA DIRECCION GLOBAL DE MANERA ESTATICA/MANUAL
+serv 11
+ifconfig eth0 inet6 add 2001:db8:eeee::11/64 up
+ifconfig eth 0
+ip -6 r
+
+serv12
+ip -6 addr add 2001:db8:eeee::12/64 dev eth0
+ifconfig eth0
+
+ping6 de SERV12 a SERV11 
+ping6 2001:db8:eeee::11 -c 3
+
+//CONFIGURAR LA DIRECCION GLOBAL STATELESS ADDRESS AUTOCONFIGURATION
+
+R1
+conf t
+int f0/0
+ipv6 enable
+ipv6 address 2001:db8:eeee::1/64
+no shut
+ipv6 unicast-routing
+exit
+
+sh ipv6 route
+
+
+serv11
+ifconfig eth0
+
+
+//CONFIGURAR LA RED2
+r2
+
+r1 conf t do sh history
+
+ifconfig eth0
+
+  int f0/0
+  ipv6 enable
+  ipv6 address 2001:db8:ffff::1/64
+  no shut
+  exit
+  ipv6 unicast-routing
+  conf t
+  sh ipv6 route
+  ipv6 unicast-routing
+  exit
+  
+ 
+ PING PC22 a SERV11
+ ping6 fe80:0:20:cc:ff:fe11:11:11%eth0
+	El ping no funciona
+traceroute6 -I fe80:0:20:cc:ff:fe11:11:11%eth0
+
+ //tunel entre dos redes ipv6
+ R1
+ conf t
+ int tunnel 12
+ ipv6 enable
+ tunnel source f0/1 
+ tunnel destination 192.0.2.2
+ tunnel mode ipv6ip
+ exit
+ do sh history
+
+
+R2
+ conf t
+ int tunnel 21
+ ipv6 enable
+ tunnel source f0/1 
+ tunnel destination 203.0.113.1
+ tunnel mode ipv6ip
+ exit
+ do sh history
+ 
+ en r1 y r2
+ sh ipv6 route
+ 
+  
+  en el enlace 132.0.2.2
+  abrimos wireshark con icmpv6
+  
+  
+  r2
+  conf t
+  ipv6 route 2001:db8:eeee::/64 tunnel 21
+  
+  r1
+  conf t
+  ipv6 route 2001:db8:ffff::/64 tunnel 12
+  
+  end
+  sh ipv6 route
+  
+  serv11
+  ping6 2001:db8:ffff:0:22cc::fe21:2121 
+  
+  
+  en r1 configure 2db8 quitarlo y probar 
+en r1
+R1#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+R1(config)#int f0/0 
+R1(config-if)#no ipv6 address 2001:2db8:eeee::1/64   
+R1(config-if)# ipv6 address 2001:db8:eeee::1/64   
+R1(config-if)#

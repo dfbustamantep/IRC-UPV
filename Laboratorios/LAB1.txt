@@ -1,0 +1,10 @@
+LAB 1
+Asignar dirreciones IP a los dispositivos
+	ifconfig eth0 192.02.10 netmask 255.255.255.0 up
+	ifconfig eth0 192.0.2.20./24 up
+	
+Ping 
+	ping 192.0.2.20 -c #deVeces
+	
+Filtros wireshark
+	icmp

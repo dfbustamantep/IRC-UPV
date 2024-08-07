@@ -1,0 +1,100 @@
+LAB7
+
+
+sh ip int br
+
+#En routers
+	sh ip route
+		C directamente conectasdas
+		-S estaticas
+		-S* salida por defecto default
+	sh ip int br
+
+
+R1 
+	F0/1 203.0.113.193
+	S1/2 10.0.2
+	
+R2
+	F0/0 203.0.113.65
+	F0/1 192.0.2.35
+	S1/2 10.0.1.1
+	
+ISP
+	F0/1 192.0.2.1
+---------------------------------------------------------------------------------------	
+#R1
+	De R1 a R2 S1/2 
+	ping 10.0.1.1
+		Si salen signos de interrogacion es que es exitoso
+		Si salen puntos no ha sido exitoso
+	
+	De R1 a R2 F0/1
+	ping 192.0.2.35	
+		
+#Configuracion servidor DHCP
+PC1
+
+#verificar que pc1  no tiene configurada una direccion ip
+	ifconfig eth0
+	
+#dhcp en wireshark en el enlace f0/0
+	
+#configuramos el router 2 para que actue como servidor dhcpv4
+#R2
+	conf t
+	
+	ip dhcp excluded-address 203.0.113.65 203.0.113.74 #reservar unas direcciones
+	ip dhcp excluded-address 203.0.113.193 203.0.113.202 #2 primeras de NET192
+	
+	#configuracion dhcp
+	ip dhcp pool NET64POOL #cualquier nombre inroduciod por el usario deberia ir en mayusculas
+	network 203.0.113.64 255.255.255.192
+	default-router 203.0.113.65
+	dns-server 192.0.2.1
+	domain-name irc.ehu.eus
+	lease 2 1 10 #2 dias 1 hora 10 minutos
+	end
+PC1 
+	ifconfig eth0
+	route
+	
+# Configurar NET192POOL
+R2
+	conf t
+
+	#configuracion dhcp
+	ip dhcp pool NET192POOL #cualquier nombre inroduciod por el usario deberia ir en mayusculas
+	network 203.0.113.192 255.255.255.192
+	default-router 203.0.113.193
+	dns-server 192.0.2.1
+	domain-name irc.ehu.eus
+	lease 2 1 10 #dias horas minutos
+	end
+	
+
+	sh run | section dhcp
+	
+	sh ip dhcp binding
+	sh ip dhcp server statistics
+	sh ip dhcp pool
+	
+R1 
+	# Configurar R1 para actuar como agente DHCP relay
+	#Al configurar un agente dhcp relay lo que hace es envaiar solicitudes al agente dhcp que ya esta creadp
+	
+	conf t
+	int f0/1
+	ip helper-address 10.0.1.1 
+	end
+	
+PC2 
+	route
+	
+R2
+	#cambiamos el tiempo a 3 minutos
+	conf t
+	ip dhcp pool NET64POOL
+	lease 0 0 3 #dias horas minutos
+	end
+	

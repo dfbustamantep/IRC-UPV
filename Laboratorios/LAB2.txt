@@ -1,0 +1,49 @@
+LAB 2
+PC0 a PC3
+	ping 192.168.20.23 -c 1
+
+PC0 a PC1
+	ping 192.168.10.11 -c 1
+
+PC0 a PC2
+	ping 192.168.10.22 -c 1
+	
+PCO para saber direcciones mac
+	arp
+
+En PCO para ver la tabla arp
+	ip neigh
+
+Borrar tabla ARP
+	ip n flush all
+
+Consultar tabla de reenvio SW1	
+	sh mac-address-table
+	
+Consultar tabla de reenvio SW2
+	sh mac-address-table
+	
+PC0 a PC2
+	ping 192.168.20.22 -c 1
+	
+Consultar tabla de reenvio SW1	
+	sh mac-address-table
+	
+Consultar tabla de reenvio SW2
+	sh mac-address-table
+
+PC1 a PC3
+	ping 192.168.20.23 -c 5
+	arp
+	
+Consultar tabla de reenvio SW1	
+	sh mac-address-table
+
+Hacer un ping de pc0 a pc1 y despues revisar rapido la tabla de reenvio
+	
+Consultar tabla de reenvio SW2
+	sh mac-address-table
+
+Repetir un comando cada x segundos en linux
+	watch -n x “comando parámetros”
+	

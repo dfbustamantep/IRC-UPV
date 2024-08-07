@@ -1,0 +1,89 @@
+LAB 3
+
+IP de los pcs
+	ifconfig
+	pc11 192.168.10.11
+	pc12 192.168.10.12
+	pc21 192.168.20.21
+	pc22 192.168.20.22
+
+Probar accesibilidad
+	pc11
+	ping 192.168.10.12 -c 5
+	ping 192.168.20.21 -c 5
+	ping 192.168.20.22 -c 5
+
+ping pc11 a pc12
+	ping 192.168.10.12 -c 5
+	
+Examina la configuración VLAN en SW1 y SW2
+	sh vlan-switch brief
+	
+	
+SW1 VLAN
+	conf t
+Se definen dos VLAN
+	vlan 10
+	name VLAN10
+	EXIT
+	vlan 20
+	name VLAN20
+	end
+	vl --- corresponde a escribir sh vlan-switch brief
+	
+Asignamos los puertos a las VLAN
+	conf t
+Puerto de pc 11 a vlan10	
+	int f1/11
+	switchport access vlan 10
+Puerto de pc21 a vlan 20
+	int f1/1
+	switchport access vlan 20
+	end
+	
+
+	vl
+
+sh interface f1/11
+sh interface f1/4
+
+Ping pc11 a pc21
+	ping 192.168.20.21 -c 5
+	
+SW2 VLAN
+
+	conf t
+Se definen dos VLAN pc12 vLAN10 y pc22 vlan20
+	vlan 10
+	name VLAN10
+	EXIT
+	vlan 20
+	name VLAN20
+	end
+	vl
+	
+Asignamos los puertos a las VLAN
+	conf t
+	int f1/12
+	switchport access vlan 10
+	int f1/2
+	switchport access vlan 20
+	end
+	vl
+
+Ping pc11 a pc12
+	ping 192.168.10.12 -c 5
+	
+VLAN TRUNKING
+	sw1
+	conf t
+int interface	
+	int f1/0 # Elige el número de puerto que conecta a SW2
+	switchport mode trunk
+	end
+	
+PING PC11 A PC21
+	ping 192.168.20.21 -c 5
+
+En los switch
+	sh mac

@@ -1,0 +1,302 @@
+LAB 1
+Asignar dirreciones IP a los dispositivos
+	ifconfig eth0 192.02.10 netmask 255.255.255.0 up
+	ifconfig eth0 192.0.2.20./24 up
+	
+Ping 
+	ping 192.0.2.20 -c #deVeces
+	
+Filtros wireshark
+	icmp
+	
+------------------------------------------
+LAB 2
+PC0 a PC3
+	ping 192.168.20.23 -c 1
+
+PC0 a PC1
+	ping 192.168.10.11 -c 1
+
+PC0 a PC2
+	ping 192.168.10.22 -c 1
+	
+PCO para saber direcciones mac
+	arp
+
+En PCO para ver la tabla arp
+	ip neigh
+
+Borrar tabla ARP
+	ip n flush all
+
+Consultar tabla de reenvio SW1	
+	sh mac-address-table
+	
+Consultar tabla de reenvio SW2
+	sh mac-address-table
+	
+PC0 a PC2
+	ping 192.168.20.22 -c 1
+	
+Consultar tabla de reenvio SW1	
+	sh mac-address-table
+	
+Consultar tabla de reenvio SW2
+	sh mac-address-table
+
+PC1 a PC3
+	ping 192.168.20.23 -c 5
+	arp
+	
+Consultar tabla de reenvio SW1	
+	sh mac-address-table
+
+Hacer un ping de pc0 a pc1 y despues revisar rapido la tabla de reenvio
+	
+Consultar tabla de reenvio SW2
+	sh mac-address-table
+
+Repetir un comando cada x segundos en linux
+	watch -n x “comando parámetros”
+------------------------------------------
+LAB 3
+
+IP de los pcs
+	ifconfig
+	pc11 192.168.10.11
+	pc12 192.168.10.12
+	pc21 192.168.20.21
+	pc22 192.168.20.22
+
+Probar accesibilidad
+	pc11
+	ping 192.168.10.12 -c 5
+	ping 192.168.20.21 -c 5
+	ping 192.168.20.22 -c 5
+
+ping pc11 a pc12
+	ping 192.168.10.12 -c 5
+	
+Examina la configuración VLAN en SW1 y SW2
+	sh vlan-switch brief
+	
+	
+SW1 VLAN
+	conf t
+Se definen dos VLAN
+	vlan 10
+	name VLAN10
+	EXIT
+	vlan 20
+	name VLAN20
+	end
+	vl --- corresponde a escribir sh vlan-switch brief
+	
+Asignamos los puertos a las VLAN
+	conf t
+Puerto de pc 11 a vlan10	
+	int f1/11
+	switchport access vlan 10
+Puerto de pc21 a vlan 20
+	int f1/1
+	switchport access vlan 20
+	end
+	
+
+	vl
+
+sh interface f1/11
+sh interface f1/4
+
+Ping pc11 a pc21
+	ping 192.168.20.21 -c 5
+	
+SW2 VLAN
+
+	conf t
+Se definen dos VLAN pc12 vLAN10 y pc22 vlan20
+	vlan 10
+	name VLAN10
+	EXIT
+	vlan 20
+	name VLAN20
+	end
+	vl
+	
+Asignamos los puertos a las VLAN
+	conf t
+	int f1/12
+	switchport access vlan 10
+	int f1/2
+	switchport access vlan 20
+	end
+	vl
+
+Ping pc11 a pc12
+	ping 192.168.10.12 -c 5
+	
+VLAN TRUNKING
+	sw1
+	conf t
+int interface	
+	int f1/0 # Elige el número de puerto que conecta a SW2
+	switchport mode trunk
+	end
+	
+PING PC11 A PC21
+	ping 192.168.20.21 -c 5
+
+En los switch
+	sh mac
+	
+-----------------------------------------------------------
+LAB 4
+En la consola de pc1
+	ifconfig
+	#verificamos la configuracion actual de la interfaz de red
+	
+Configurar un host
+En este caso pc1
+	ifconfig eth0 10.0.2.10/24 up
+	#confifguramos la direccion IPv4 de la interfaz eth0 de nuestro pc1
+	
+tabla de reenvio en pc1 
+	route
+	
+pc3
+	ifconfig eth0 10.0.1.30/24 up
+	#confifguramos la direccion IPv4 de la interfaz eth0 de nuestro pc3
+		
+tabla de reenvio en pc3
+	route
+	
+PING pc1 a pc3
+	ping 10.0.1.30 -c 5
+	
+PC1
+	route add default gw 10.0.2.1 #gw getway
+	route
+
+PC3
+	route add default gw 10.0.1.1 
+	route
+	
+Router
+	sh ip int br #show ip 
+
+	sh ip route #tabla de reenvio
+
+	sh run #sh running-config 
+
+	conf t #modo de configuracion
+	ip routing #habilitamos el enrutamiento ip
+	do sh run 
+	do sh ip route 
+
+	#configuramos las interfaces del router
+	int f0/0
+	ip address 10.0.2.1 255.255.255.0
+	no shutdown
+	do sh ip int br   
+
+	int f0/1
+	ip addres 10.0.1.1 255.255.255.0
+	no shut
+
+	int f1/0
+	ip address 100.64.16.2 255.255.255.0
+	no shut
+
+	do sh ip route
+	
+	#ruta predeterminada
+	ip route 0.0.0.0 0.0.0.0 100.64.16.1
+
+	end
+
+	sh ip route
+
+pc1
+	ping 10.0.1.30 -c 5
+	ping 10.0.2.2 -c 5
+
+r1
+	conf t
+	int f1/0
+	ip address 100.64.16.2 255.255.255.0
+	end
+	
+pc1
+	ping 10.0.2.2 -c 5
+	traceroute 10.0.2.20
+	
+R1
+	traceroute 10.0.2.20
+	
+-----------------------------------------------------------
+LAB 5
+Verificar la configuracion Ip de los cuatro pcs
+	ifconfig
+	
+	pc1-1 203.0.113.71
+	pc1-2 203.0.113.98
+	pc2 203.0.113.130
+	pc3 203.0.113.194
+	pcx 198.51.100.10
+	
+Dos pings de PC1-1 a Pc1-2
+	ping 203.0.113.98 -c 2
+
+Traceroute
+	traceroute 203.0.113.98 -I
+	
+ping pc1-1 a pc2
+	ping 203.0.113.130 -c 5
+traceroute para ver hasta donde llega
+	traceroute 203.0.113.130 -I
+	
+Solucion punto 10 laboratorio pasado
+pc1-1 y pc2
+	ifconfig
+	route
+	
+PC1-1 
+	ping 203.0.113.65 -c 5
+	
+PC2
+	ping 203.0.113.130 -c 5
+
+R1
+	sh ip int br
+	sh ip route
+	conf t
+	ip routing #habilitamos el enrutamiento ip
+	do sh run 
+	do sh ip route 
+	#añadir ruta predeterminada 
+	#--------------------------------------------------------
+	#REVISAR
+	ip route 0.0.0.0 0.0.0.0 10.0.12.0 #NO ESTOY SEGURO
+	#-----------------------------------------------------------
+	end
+	sh ip route
+
+#RVISAR	-----------------
+ping pc1-1 a pc2
+	ping 203.0.113.130 -c 5
+
+ping de pc1-1 a pc3
+	ping 203.0.113.194 -c 5
+	traceroute 203.0.113.194 -I 
+
+ping PC2 a PC1-2
+	ping 203.0.113.98 -c 5
+	traceroute 203.0.113.98 -I
+	
+ping PC2 a PC1-1
+	ping 203.0.113.71 -c 5
+	traceroute 203.0.113.71 -I
+	
+ping de PC2 A PCX
+	ping 198.51.100.10 -c 5
+#----------------	

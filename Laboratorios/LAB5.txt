@@ -1,0 +1,137 @@
+LAB 5
+Verificar la configuracion Ip de los cuatro pcs
+	ifconfig
+	
+	pc1-1 203.0.113.71
+	pc1-2 203.0.113.98
+	pc2 203.0.113.130
+	pc3 203.0.113.194
+	pcx 198.51.100.10
+	
+Dos pings de PC1-1 a Pc1-2
+	ping 203.0.113.98 -c 2
+
+Traceroute
+	traceroute 203.0.113.98 -I
+	
+	
+ping pc1-1 a pc2
+	ping 203.0.113.130 -c 5
+traceroute para ver hasta donde llega
+	traceroute 203.0.113.130 -I
+	
+Solucion punto 10 laboratorio pasado
+pc1-1 y pc2
+	ifconfig
+	route
+	
+Estamos verificando los enlaces	
+PC1-1 
+	ping 203.0.113.65 -c 5
+	
+PC2
+	ping 203.0.113.130 -c 5
+
+
+R1
+//verificamos que las interfaces del router esten asignadas
+	sh ip int br
+	sh ip route
+	
+	conf t
+	ip routing #habilitamos el enrutamiento ip
+	do sh run 
+	do sh ip route 
+	#añadir ruta predeterminada 
+	#--------------------------------------------------------
+	#REVISAR
+	#A CUALQUIER RED CON CUALQUIER MASCARA GW
+	ip route 0.0.0.0 0.0.0.0 10.0.12.2 #NO ESTOY SEGURO
+	#-----------------------------------------------------------
+	end
+	sh ip route
+	
+R2 
+	sh ip int br
+	sh ip route
+	
+	Activamos la interfaz f0/0
+	conf t
+	int f0/0
+	no shutdown 
+	end
+	
+	sh ip int br
+	sh ip route
+
+ping pc1-1 a pc2
+	ping 203.0.113.130 -c 5
+
+ping de pc1-1 a pc3
+	ping 203.0.113.194 -c 5
+	traceroute 203.0.113.194 -I 
+	--no funciona host unreachable,toca arreglarlo
+	--llega hasta router 1
+
+R3
+	sh ip int br
+	sh ip route
+	conf t
+	int s1/3
+	---No se activa el protocolo
+	no shutdown
+	end
+	
+	conf t
+	ip routing
+	end
+
+R1
+	conf t
+	int s1/3
+	ip address 10.0.13.1 255.255.255.252
+	no shutdown 
+	end
+	
+ping de pc1-1 a pc3
+	ping 203.0.113.194 -c 5
+	traceroute 203.0.113.194 -I 
+
+////////////////////
+R1		
+	conf t
+	 ip route 203.0.113.192 255.255.255.192 10.0.13.2
+	 sh ip route
+/////////////////////
+ 
+ ping de pc1-1 a pc3
+	ping 203.0.113.194 -c 5
+	traceroute 203.0.113.194 -I 
+	
+R3
+	sh ip int br
+	sh ip route
+	conf t
+	ip routing
+	end
+	/////////////////////
+	conf t
+	ip route 203.0.113.64 255.255.255.224 10.0.13.1
+	end
+	/////////////////////
+ ping de pc1-1 a pc3
+	ping 203.0.113.194 -c 5
+	traceroute 203.0.113.194 -
+	
+#REVISAR
+ping PC2 a PC1-2
+	ping 203.0.113.98 -c 5
+	traceroute 203.0.113.98 -I
+	
+ping PC2 a PC1-1
+	ping 203.0.113.71 -c 5
+	traceroute 203.0.113.71 -I
+	
+ping de PC2 A PCX
+	ping 198.51.100.10 -c 5
+#----------------	

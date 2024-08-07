@@ -1,0 +1,148 @@
+tar xvf Descargas/lab11-iptables.tar.gz -C GNS3/projects/
+
+docker images
+//alpineplus sistema firewall
+
+//permitir que se registre cualquier informacion
+sudo sysctl -w net.netfilter.nf_log_all_netns=1 
+
+iptables -t filter (-A -L -F -Z) cadena filtro(-s -d -j -o -p) (icmp udp tcp) accion(LOG ACCEPT DROP REJECT)
+
+PING DE Ć1 A SERV 
+
+PING DE FW1 A SERV
+
+PING DE FW1 A SERV
+
+PING DE FW2 A PC1
+
+
+VERIFICAR SI EN SERV ESTAN DISPONIBLES EL SERVICIO TELNET Y WEB
+DESDE PC1 ESTABLECER UNA SESION TELNET CON EL SERVIDOR
+REPETIR CONEXION TELNET PERO POR EL PUERTO 80 DONDE ESCUCHA EL SERVIDOR WEB
+
+-----------CONFIGURACION DE UN BASTON/CORTAFUEGOS PERSONAL-------------------
+UTILIZANDO IPTABLES ESCRIBIR UN SCRIPT EN EL SERVIDOR PARA IMPLEMENTAR LOS CRITERIOS
+DE SEGURIDAD ANTERIORES
+
+
+
+PING DE FW2 A SERV 
+PING DE PC1 A SERV
+PING SERV A PC1
+COMPROBAR QUE NO SE PUEDE ESTABLECER CONEXION TELNET P WEB DESDE PC1 A SERV
+REVISARLAS ESTADISTICAS DE NETFILTER
+CAMBIAR CONFIGURACION DE NETFILTER 
+
+
+-----------CONFIGURACION DE UN CORTAFUEGOS-------------------
+ESCRIBIR UN SCIPT EN FW1 QUE IMPLEMENTE LA POLITICA DE SEGURIDAD Y REGISTRE LOS ACCESOS
+NO PERMITIDOS
+
+PING DE PC1 A FW2 
+DESDE PC1 ESTABLECER UNA SESION WEB CON SERV Y OTRA CON FW2
+INTENTAR HACER UN PING DE FW2 A FW1
+
+ESCRIBIR UN SCRIPT EN FW2 QUE IMPLMENETE LA POLITICA DE SEGURIDAD Y REGISTRE LOS ACCESOS
+NO PERMITIDOS
+
+REPETIR LAS PRUEBAS ANTERIORES Y TAMBIEN HACER:
+	ESTABLECER UNA SESION WEB DE PC1 CON SERV
+	SESION WEB Y TELNET DE FW1 CON SEERV ¿POR QUE NO FUNCIONA?
+	PING DE SERV A FW2
+	ESTABLECER UNA SESION WEB DE PC1 CON FW2/ETH0 
+
+
+
+En la consola de serv 
+	nano /etc/network/SERV.startup 
+	//comentar unas lineas
+	#if [ "$IFACE" != eth0 ]; then
+	#exit 0
+	#fi
+	
+	sh /etc/network/SERV.startup
+	
+	netstat -atn
+	nano reglas.sh
+	
+	NET2=203.0.113/24
+
+	iptables -F
+	iptables -Z
+
+	iptables -A INPUT -i lo -j ACCEPT
+	iptables -A OUTPUT -o lo -j ACCEPT
+
+	# reglas de filtrado
+	iptables -A INPUT -p icmp -s $NET2 -j ACCEPT
+	iptables -A OUTPUT -p icmp -d $NET2 -j ACCEPT
+
+	# Rechazar todo
+	iptables -A INPUT -j LOG --log-prefix "DROP-SERVIDOR-INPUT:   "
+	iptables -A INPUT -j DROP             
+	iptables -A OUTPUT -j LOG --log-prefix "DROP-SERVIDOR-OUTPUT:   "
+	iptables -A OUTPUT -j DROP
+
+	#ejecturar el script
+	sh reglas.sh
+	
+	#ping de fww2 a 
+	ping -c 1 203.0.113.20
+
+	ping pc1
+	ping -c 1 203.0.113.20
+	
+	traceroute desde pc1
+	traceroute 203.0.113.20
+
+	ping serv a pc1
+	ping -c 1 192.0.2.10
+	
+	comprobar que no se puede establecer una conexion telnet
+	PC1
+	telnet 203.0.113.20
+	
+	SERV
+	nano reglas sh
+	//en reglas de filtrado
+	iptables -A INPUT -p tcp --dport 80 -j ACCEPT
+	iptables -A OUTPUT -p tcp --sport http -j ACCEPT
+
+
+	SERV
+	sh reglas.sh
+	
+	en pc1
+	telnet 203.0.113.1 80
+
+	//get / http/1.1
+	
+	
+	FW1
+	nano reglas.sh
+	
+	
+	NET2=203.0.113/24
+	NET2=192.0.2/24
+	
+	iptables -F
+	iptables -Z
+
+	iptables -A INPUT -i lo -j ACCEPT
+	iptables -A OUTPUT -o lo -j ACCEPT
+
+	# reglas de filtrado
+	iptables -A FORWARD -s $NET1 -p tcp --dport 80 -j ACCEPT
+	iptables -A FORWARD -p $NET1 -P tcp --sport http -j ACCEPT
+	
+	# Rechazar todo
+	iptables -A FORWARD -j LOG --log-prefix "DROP-fw1-INPUT:   "
+	iptables -A FORWARD -j DROP   
+	
+	iptables -A INPUT -j LOG --log-prefix "DROP-fw1-INPUT:   "
+	iptables -A INPUT -j DROP             
+	iptables -A OUTPUT -j LOG --log-prefix "DROP-fw1-OUTPUT:   "
+	iptables -A OUTPUT -j DROP
+
+	iptables -L

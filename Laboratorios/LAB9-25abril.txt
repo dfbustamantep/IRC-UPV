@@ -1,0 +1,109 @@
+tar xvf Descargas/lab9-NAT.tar.gz -C GNS3/projects/
+Network address translation
+Poner en mrcha todas las maquinas menos pc3
+
+Desde el servidor a PC1
+	ping -c 2 192.168.1.10
+
+------------Configurando un NAT estatico--------------------------------
+
+Mismo numero privadas y publicas  
+PC1-eth0 198.51.100.161
+PC2-eth0 198.51.100.162
+
+Toca decirle al router cuales son las redes publicas y cuales son privadas
+
+R1
+	sh ip int br
+
+	conf t
+	int f0/1
+	ip nat inside
+	do sh ip int br
+
+NVI0 NAT Virtual Interface
+	
+	int s1/0
+	ip nat outside
+	exit
+	
+Configurar asignacion estatica
+
+	conf t
+	
+	ip nat inside source static 192.168.1.10 198.51.100.161
+	ip nat inside source static 192.168.1.20 198.51.100.162
+	end
+	
+	
+	sh ip nat statistics 
+	sh ip nat translations
+	
+	sh ip nat translation verbose
+	
+	#No funciono
+PC1
+	¿Porque aca el ping funciona sin el -c pero con el -c no funciona?
+	ping 203.0.113.10
+	
+R1
+	sh ip nat translation verbose
+	
+	
+PC1
+	telnet 192.0.2.1
+
+Comprobar que pc1 y pc2 son visibles desde el servidor
+SERV
+	ping -c 2 198.51.100.161
+
+R1 
+	sh ip nat translation verbose
+	
+ACL Lista de Control de Acceso
+
+
+R1
+	conf t
+	PARA AMBAS CONFIGURACIONES QUE HABIAMOS HECHO
+	not ip nat inside source static
+	sh ip nat statistics
+	
+CONFIGURACION NAT DINAMICO
+R1
+	conf t
+	access-list 1 permit 192.168.1.10 0.0.0.0
+	access-list 1 permit 192.168.1.20 0.0.0.0
+	
+	ip nat pool PUBLICAS 198.51.100.161 198.51.100.162 prefix-length 3
+	ip nat inside source list 1 pool PUBLICAS
+	end
+	
+	sh ip nat statistics
+
+SERV
+	ping -c 2 198.51.100.161
+
+PC1 y PC2 
+	ping -c 2 203.0.113.10
+
+AHORA CUALQUIER MAQUINA DE MI RED DEBE PODER SALIR AFUERA
+
+-----------------------------------------
+ip masquerading
+
+
+
+
+-----------------------------------------
+
+R1
+	conf t 
+	no a las configuraciones
+	no ip nat inside source list 1 pool PUBLICAS 
+	access-list 2 permit 192.168.1.0 0.0.0.255
+	ip nat inside source list 2 pool PUBLICAS overload
+
+	NO ME FUNCIONO
+PING desde cada pc a serv
+

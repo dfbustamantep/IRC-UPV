@@ -1,0 +1,90 @@
+LAB 4
+En la consola de pc1
+	ifconfig
+	#verificamos la configuracion actual de la interfaz de red
+	
+CONFIGURAR UN HOST
+En este caso pc1
+	ifconfig eth0 10.0.2.10/24 up
+	#confifguramos la direccion IPv4 de la interfaz eth0 de nuestro pc1
+	
+tabla de reenvio en pc1 
+	route
+	
+PC3
+	ifconfig eth0 10.0.1.30/24 up
+	#confifguramos la direccion IPv4 de la interfaz eth0 de nuestro pc3
+		
+tabla de reenvio en PC3
+	route
+	
+PING PC1 a PC3
+	ping 10.0.1.30 -c 5
+	
+PC1
+	route add default gw 10.0.2.1 #gw getway
+	route
+
+PC3
+	route add default gw 10.0.1.1 
+	route
+	
+CONFIGURACION ROUTER R1
+	sh ip int br #show ip  muestra las interfaces
+
+	sh ip route #tabla de reenvio
+
+	sh run #sh running-config 
+
+	conf t #modo de configuracion
+	ip routing #habilitamos el enrutamiento ip
+	do sh run 
+	do sh ip route 
+
+	#configuramos las interfaces del router
+	int f0/0
+	ip address 10.0.2.1 255.255.255.0
+	no shutdown
+	do sh ip int br   
+
+	int f0/1
+	ip address 10.0.1.1 255.255.255.0
+	no shut
+
+	int f1/0
+	ip address 100.64.16.2 255.255.255.252
+	no shut
+
+	do sh ip route
+	
+	#ruta predeterminada
+	ip route 0.0.0.0 0.0.0.0 100.64.16.1
+
+	end
+
+	sh ip route
+
+pc1
+	PING A PC3
+	ping 10.0.1.30 -c 5
+	
+	PING A F0/0 R1
+	ping 10.0.2.1 -c 5
+	
+pc1
+	PING A PC2
+	ping 192.0.2.2 -c 5
+	traceroute 192.0.2.2
+	
+R1
+	traceroute 10.0.2.20
+	
+	
+	
+	
+	
+########################
+10
+revisar que los host esten configurados
+verificamos que los routers esten bien configurados (interfaces y salida por defecto)
+	
